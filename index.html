@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Todo app</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Todo App</h1>
+
+      <div class="todo-form">
+        <div class="added-msg">Successfully added!</div>
+        <input
+          type="text"
+          class="todo-input"
+          placeholder="Enter a new todo"
+          required
+        />
+        <input type="date" class="todo-date" required />
+        <button class="add-btn">Add Todo</button>
+      </div>
+
+      <div class="sub-container">
+        <div class="todo-list"></div>
+      </div>
+    </div>
+    <script type="module" src="scripts/script.js"></script>
+  </body>
+</html>
