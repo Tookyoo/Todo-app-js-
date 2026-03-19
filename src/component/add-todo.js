@@ -1,4 +1,4 @@
-import { todoList, removeTodo } from "../data/todo-list.js";
+import { removeTodo, todoList } from "../data/todo-list.js";
 import { renderTodoList } from "../ui/render-todos.js";
 import { saveToStorage } from "../data/save-storage.js";
 
@@ -41,6 +41,11 @@ export function addTodo() {
   dateInput.value = "";
 }
 
+function handleRemove(id) {
+  removeTodo(id);
+  renderTodoList();
+}
+
 export function completeTodo(id) {
   const todo = todoList.find((todo) => String(todo.id) === String(id));
 
@@ -70,28 +75,26 @@ export function setupDelegateListener() {
   const listContainer = document.querySelector(".todo-list");
   const formContainer = document.querySelector(".todo-form");
 
-  listContainer.addEventListener("click", (event) => {
-    const target = event.target;
-    const btn = target.closest(".delete-btn");
+  formContainer.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addTodo();
+  });
 
-    if (btn) {
-      const id = btn.dataset.id;
-      removeTodo(id);
+  listContainer.addEventListener("click", (e) => {
+    const target = e.target;
+    const delBtn = target.closest(".delete-btn");
+
+    if (delBtn) {
+      const id = target.dataset.id;
+      handleRemove(id);
     }
   });
 
-  listContainer.addEventListener("change", (event) => {
-    const target = event.target;
+  listContainer.addEventListener("change", (e) => {
+    const target = e.target;
 
     if (target.classList.contains("todo-checkbox")) {
       const id = target.dataset.id;
       completeTodo(id, target.checked);
-    }
-  });
-
-  formContainer.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      addTodo();
     }
   });
 
