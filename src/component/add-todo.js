@@ -1,4 +1,4 @@
-import { todoList } from "../data/todo-list.js";
+import { todoList, removeTodo } from "../data/todo-list.js";
 import { renderTodoList } from "../ui/render-todos.js";
 import { saveToStorage } from "../data/save-storage.js";
 
@@ -41,10 +41,6 @@ export function addTodo() {
   dateInput.value = "";
 }
 
-export function setupAddTodoListener() {
-  document.querySelector(".add-btn").addEventListener("click", addTodo);
-}
-
 export function completeTodo(id) {
   const todo = todoList.find((todo) => String(todo.id) === String(id));
 
@@ -70,8 +66,19 @@ export function completeTodo(id) {
   }
 }
 
-export function completeListener() {
+export function setupDelegateListener() {
   const listContainer = document.querySelector(".todo-list");
+  const formContainer = document.querySelector(".todo-form");
+
+  listContainer.addEventListener("click", (event) => {
+    const target = event.target;
+    const btn = target.closest(".delete-btn");
+
+    if (btn) {
+      const id = btn.dataset.id;
+      removeTodo(id);
+    }
+  });
 
   listContainer.addEventListener("change", (event) => {
     const target = event.target;
@@ -81,15 +88,12 @@ export function completeListener() {
       completeTodo(id, target.checked);
     }
   });
-}
 
-export function eventKeydown() {
-  const nameInput = document.querySelector(".todo-input");
-  const dateInput = document.querySelector(".todo-date");
-
-  dateInput.addEventListener("keydown", (event) => {
+  formContainer.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       addTodo();
     }
   });
+
+  document.querySelector(".add-btn").addEventListener("click", addTodo);
 }
