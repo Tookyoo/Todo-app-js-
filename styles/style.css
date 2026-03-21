@@ -75,11 +75,10 @@ h1 {
   right: 23rem;
   top: 85px;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
 }
 
 .added-msg.active {
-  opacity: 1;
+  animation: slideFadeIn 0.4s ease forwards;
 }
 
 .todo-checkbox {
@@ -93,11 +92,35 @@ h1 {
   color: green;
   font-size: 15px;
   position: absolute;
-  left: 15rem;
-  display: none;
-  transition: display 0.5s ease-in-out;
+  left: 17rem;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .completed-msg.active {
-  display: block;
+  animation: slideIn 0.4s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

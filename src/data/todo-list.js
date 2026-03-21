@@ -6,3 +6,9 @@ export function removeTodo(idToRemove) {
   todoList = todoList.filter((todo) => String(todo.id) !== String(idToRemove));
   saveToStorage();
 }
+
+export const appState = {
+  // state object
+  activeIds: [],
+  isAddedActive: false,
+};

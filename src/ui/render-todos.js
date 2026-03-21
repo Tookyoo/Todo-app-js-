@@ -1,21 +1,22 @@
-import { todoList } from "../data/todo-list.js";
+import { todoList, appState } from "../data/todo-list.js";
 
 export function renderTodoList() {
-  let renderHtml = "";
+  const root = document.querySelector(".todo-list");
 
-  todoList.forEach(({ name, date, id, completed }) => {
-    const isChecked = completed ? "checked" : "";
+  root.innerHTML = todoList
+    .map(({ name, date, id, completed }) => {
+      const isCheck = completed ? "checked" : "";
+      const isActive = appState.activeIds[id] ? "active" : "";
 
-    renderHtml += `
-          <div class="todo-item">
-            <div class="completed-msg">Completed!</div>
-            <input type="checkbox" class="todo-checkbox check-box" data-id="${id}" ${isChecked} />
+      return `
+      <div class="todo-item" data-id="${id}">
+            <div class="completed-msg ${isActive}" data-id="${id}">Done!</div>
+            <input type="checkbox" class="todo-checkbox check-box" data-id="${id}" ${isCheck}/>
             <div>${name}</div>
             <div>${date}</div>
             <button class="delete-btn" data-id="${id}">Delete</button>
           </div> 
-         `;
-  });
-
-  document.querySelector(".todo-list").innerHTML = renderHtml;
+      `;
+    })
+    .join("");
 }
