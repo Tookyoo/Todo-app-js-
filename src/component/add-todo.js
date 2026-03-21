@@ -1,6 +1,12 @@
-import { removeTodo, todoList } from "../data/todo-list.js";
+import { removeTodo, todoList, appState } from "../data/todo-list.js";
 import { renderTodoList } from "../ui/render-todos.js";
 import { saveToStorage } from "../data/save-storage.js";
+import { renderPage } from "../ui/render-page.js";
+
+function setAdded(value) {
+  appState.isAddedActive = value;
+  renderPage();
+}
 
 export function addTodo() {
   let nameInput = document.querySelector(".todo-input");
@@ -8,8 +14,6 @@ export function addTodo() {
 
   const name = nameInput.value.trim();
   const date = dateInput.value;
-
-  const addedMsg = document.querySelector(".added-msg");
 
   if (todoList.some((todo) => todo.name === name)) {
     return alert("Todo with this name already exists!");
@@ -19,22 +23,19 @@ export function addTodo() {
     return alert("Please fill in both fields!");
   }
 
-  if (addedMsg) {
-    addedMsg.classList.add("active");
+  setAdded(true);
+  setTimeout(() => {
+    setAdded(false);
+  }, 1500);
 
-    const timeoutId = setTimeout(() => {
-      addedMsg.classList.remove("active");
-    }, 1000);
-  }
-
-  const newtodo = {
+  const newTodo = {
     id: crypto.randomUUID(),
     name,
     date,
     completed: false,
   };
 
-  todoList.push(newtodo);
+  todoList.push(newTodo);
   saveToStorage();
   renderTodoList();
   nameInput.value = "";
@@ -44,31 +45,6 @@ export function addTodo() {
 function handleRemove(id) {
   removeTodo(id);
   renderTodoList();
-}
-
-export function completeTodo(id) {
-  const todo = todoList.find((todo) => String(todo.id) === String(id));
-
-  if (todo) {
-    todo.completed = !todo.completed;
-    saveToStorage();
-  }
-
-  renderTodoList();
-
-  if (todo.completed) {
-    const currentTodoItem = document
-      .querySelector(`[data-id="${id}"]`)
-      .closest(".todo-item");
-    const completedMsg = currentTodoItem.querySelector(".completed-msg");
-
-    if (completedMsg) {
-      completedMsg.classList.add("active");
-      setTimeout(() => {
-        completedMsg.classList.remove("active");
-      }, 1000);
-    }
-  }
 }
 
 export function setupDelegateListener() {
@@ -94,9 +70,39 @@ export function setupDelegateListener() {
 
     if (target.classList.contains("todo-checkbox")) {
       const id = target.dataset.id;
-      completeTodo(id, target.checked);
+      completeTodo(id);
     }
   });
 
-  document.querySelector(".add-btn").addEventListener("click", addTodo);
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("add-btn")) addTodo();
+  });
+}
+
+function completeTodo(id) {
+  const todo = todoList.find((todo) => String(todo.id) === String(id));
+  let isActiveId = appState.activeIds[id];
+
+  if (!todo) return;
+
+  todo.completed = !todo.completed;
+
+  if (todo.completed) {
+    if (isActiveId) clearTimeout(isActiveId); // if its there, reset it
+
+    isActiveId = true; // mark as active in our state record
+    renderTodoList(); // shows the active class
+
+    appState.activeIds[id] = setTimeout(() => {
+      // stacking ids in the array
+
+      delete appState.activeIds[id];
+      renderTodoList();
+    }, 1500);
+  } else {
+    clearTimeout(isActiveId);
+    delete appState.activeIds[id];
+  }
+  saveToStorage();
+  renderTodoList();
 }
